@@ -7,6 +7,8 @@ Please report bugs!
 TL;DR: run biome_selecor_main.py; click "World Type" until you see "Default" again.
 For me Pillow is only working with Python 3.10.6, so make sure you use this.
 
+Requirements: Python 3.10.6 (with PATH enabled) and internet connection while opening the for the first time to download Pillow (Python libary)
+
 Tips:
 -use river biomes for nicer rivers
 -adjust water level manually
