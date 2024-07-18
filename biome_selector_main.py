@@ -45,226 +45,226 @@ def main():
 
 # Get the desired biomes list
 def main_w(allow, main_name):
-    ''' The main functionality '''
-    # Read the full biome list into a Python list
-    dirty_biomes = parse_w(RAW)
+  ''' The main functionality '''
+  # Read the full biome list into a Python list
+  dirty_biomes = parse_w(RAW)
 
-    # Filter that list
-    clean_biomes = narrow_w(dirty_biomes, allow)
+  # Filter that list
+  clean_biomes = narrow_w(dirty_biomes, allow)
 
-    # Assemble the filtered biomes back into a .json object
-    out = assemble_w(clean_biomes)
+  # Assemble the filtered biomes back into a .json object
+  out = assemble_w(clean_biomes)
 
-    # Save to a file
-    #script_dir = os.path.dirname(os.path.abspath(__file__))
-    #main_path = os.path.join(script_dir, main_name)
+  # Save to a file
+  #script_dir = os.path.dirname(os.path.abspath(__file__))
+  #main_path = os.path.join(script_dir, main_name)
 
-    output_path = os.path.join(main_name +"/data/minecraft/worldgen/world_preset", "normal.json")
-    with open(output_path, "w") as f:
-        f.write(out)
-    # Done!
-    return 0
+  output_path = os.path.join(main_name +"/data/minecraft/worldgen/world_preset", "normal.json")
+  with open(output_path, "w") as f:
+      f.write(out)
+  # Done!
+  return 0
 
 def parse_w(string):
-    ''' Take a string and break it up into a list of brackets '''
+  ''' Take a string and break it up into a list of brackets '''
 
-    # Hold each { .... } while we assemble it
-    tmp = ""
+  # Hold each { .... } while we assemble it
+  tmp = ""
 
-    # The list to return
-    out = []
+  # The list to return
+  out = []
 
-    # How many brackets deep are we?
-    depth = 0
+  # How many brackets deep are we?
+  depth = 0
 
-    # Start at ~20 as we assume the all_biomes starts with
-    # { "biomes": [
-    # and new lines and junk. We just don't want that first bracket
+  # Start at ~20 as we assume the all_biomes starts with
+  # { "biomes": [
+  # and new lines and junk. We just don't want that first bracket
 
-    # For each character in the string...
-    for c in string[20:]:
+  # For each character in the string...
+  for c in string[20:]:
 
-        # Record it
-        tmp += c
+      # Record it
+      tmp += c
 
-        # Each element in the list ends with a closing bracket.
-        # Is this the closing bracket that matches with the opening bracket?
-        if (c == "}"):
-            depth -= 1
+      # Each element in the list ends with a closing bracket.
+      # Is this the closing bracket that matches with the opening bracket?
+      if (c == "}"):
+          depth -= 1
 
-        # Each element in the list starts with an opening bracket.
-        elif (c == "{"):
-            depth += 1
+      # Each element in the list starts with an opening bracket.
+      elif (c == "{"):
+          depth += 1
 
-        # Have we fully found a { ... } ?
-        if (depth == 0):
+      # Have we fully found a { ... } ?
+      if (depth == 0):
 
-            # Store it as a list element
-            out.append(tmp)
+          # Store it as a list element
+          out.append(tmp)
 
-            # Get ready for a new list element
-            tmp = ""
+          # Get ready for a new list element
+          tmp = ""
 
-    # Return the list!
-    return out
+  # Return the list!
+  return out
 
 def narrow_w(lst, filt):
-    ''' Filter the list by a list of allowed elements '''
+  ''' Filter the list by a list of allowed elements '''
 
-    # What to return
-    out = []
+  # What to return
+  out = []
 
-    # For each element in the list to be filtered...
-    for l in lst:
+  # For each element in the list to be filtered...
+  for l in lst:
 
-        # For each element in the filter...
-        for f in filt:
+      # For each element in the filter...
+      for f in filt:
 
-            # If the list element contains an allowed biome...
-            if (f in l):
+          # If the list element contains an allowed biome...
+          if (f in l):
 
-                # Record it!
-                out.append(l)
+              # Record it!
+              out.append(l)
 
-                # Save time
-                break
+              # Save time
+              break
 
-    # Return the filtered list
-    return out
+  # Return the filtered list
+  return out
 
 def assemble_w(lst):
-    ''' Reassemble the string into something that looks like a .json '''
+  ''' Reassemble the string into something that looks like a .json '''
 
-    # Start the .json off with the given header
-    header = '''{
-  "dimensions": {
-    "minecraft:overworld": {
-      "type": "minecraft:overworld",
-      "generator": {
-        "type": "minecraft:noise",
-        "settings": "minecraft:overworld",
-        "biome_source": {
-          "type": "minecraft:multi_noise",
+  # Start the .json off with the given header
+  header = '''{
+"dimensions": {
+  "minecraft:overworld": {
+    "type": "minecraft:overworld",
+    "generator": {
+      "type": "minecraft:noise",
+      "settings": "minecraft:overworld",
+      "biome_source": {
+        "type": "minecraft:multi_noise",
 '''
-    out = header + "\"biomes\": ["
+  out = header + "\"biomes\": ["
 
-    # For each { ... } element, except the last one
-    for l in lst[:-1]:
+  # For each { ... } element, except the last one
+  for l in lst[:-1]:
 
-        # Record it
-        out += l
+      # Record it
+      out += l
 
-        # Add a comma
-        out += ",\n"
+      # Add a comma
+      out += ",\n"
 
-    # Now add the last element, with no comma
-    out += lst[-1]
+  # Now add the last element, with no comma
+  out += lst[-1]
 
-    # Add a newline and close the list
-    out += "\n]"
+  # Add a newline and close the list
+  out += "\n]"
 
-    # Add the closing brackets for the JSON structure
-    footer = '''}
-    },
-    "minecraft:the_end": {
-      "type": "minecraft:the_end",
-      "generator": {
-        "type": "minecraft:noise",
-        "settings": "minecraft:end",
-        "biome_source": {
-          "type": "minecraft:the_end"
-        }
-      }
-    },
-    "minecraft:the_nether": {
-      "type": "minecraft:the_nether",
-      "generator": {
-        "type": "minecraft:noise",
-        "settings": "minecraft:nether",
-        "biome_source": {
-          "type": "minecraft:multi_noise",
-          "preset": "minecraft:nether"
-        }
-      }
-    },
-    "minecraft:normal_overworld": {
-      "type": "minecraft:overworld",
-      "generator": {
-        "type": "minecraft:noise",
-        "biome_source": {
-          "type": "minecraft:multi_noise",
-          "preset": "minecraft:overworld"
-        },
-        "settings": "minecraft:overworld"
-      }
-    },
-    "minecraft:duplicate_nether": {
-      "type": "minecraft:the_nether",
-      "generator": {
-        "type": "minecraft:noise",
-        "settings": "minecraft:nether",
-        "biome_source": {
-          "type": "minecraft:multi_noise",
-          "preset": "minecraft:nether"
-        }
-      }
-    },
-    "minecraft:ocean_overworld": {
-      "type": "minecraft:overworld",
-      "generator": {
-        "type": "minecraft:noise",
-        "biome_source": {
-          "type": "minecraft:fixed",
-          "biome": "minecraft:ocean"
-        },
-        "settings": "minecraft:overworld"
-      }
-    },
-    "minecraft:overworld_caves": {
-      "type": "minecraft:overworld_caves",
-      "generator": {
-        "type": "minecraft:noise",
-        "biome_source": {
-          "type": "minecraft:multi_noise",
-          "preset": "minecraft:overworld"
-        },
-        "settings": "minecraft:caves"
-      }
-    },
-    "minecraft:ended_overworld": {
-      "type": "minecraft:overworld",
-      "generator": {
-        "type": "minecraft:noise",
-        "biome_source": {
-          "type": "minecraft:the_end",
-          "preset": "minecraft:overworld"
-        },
-        "settings": "minecraft:floating_islands"
-      }
-    },
-    "minecraft:ended_nether": {
-      "type": "minecraft:the_nether",
-      "generator": {
-        "type": "minecraft:noise",
-        "biome_source": {
-          "type": "minecraft:the_end",
-          "preset": "minecraft:nether"
-        },
-        "settings": "minecraft:floating_islands"
+  # Add the closing brackets for the JSON structure
+  footer = '''}
+  },
+  "minecraft:the_end": {
+    "type": "minecraft:the_end",
+    "generator": {
+      "type": "minecraft:noise",
+      "settings": "minecraft:end",
+      "biome_source": {
+        "type": "minecraft:the_end"
       }
     }
+  },
+  "minecraft:the_nether": {
+    "type": "minecraft:the_nether",
+    "generator": {
+      "type": "minecraft:noise",
+      "settings": "minecraft:nether",
+      "biome_source": {
+        "type": "minecraft:multi_noise",
+        "preset": "minecraft:nether"
+      }
+    }
+  },
+  "minecraft:normal_overworld": {
+    "type": "minecraft:overworld",
+    "generator": {
+      "type": "minecraft:noise",
+      "biome_source": {
+        "type": "minecraft:multi_noise",
+        "preset": "minecraft:overworld"
+      },
+      "settings": "minecraft:overworld"
+    }
+  },
+  "minecraft:duplicate_nether": {
+    "type": "minecraft:the_nether",
+    "generator": {
+      "type": "minecraft:noise",
+      "settings": "minecraft:nether",
+      "biome_source": {
+        "type": "minecraft:multi_noise",
+        "preset": "minecraft:nether"
+      }
+    }
+  },
+  "minecraft:ocean_overworld": {
+    "type": "minecraft:overworld",
+    "generator": {
+      "type": "minecraft:noise",
+      "biome_source": {
+        "type": "minecraft:fixed",
+        "biome": "minecraft:ocean"
+      },
+      "settings": "minecraft:overworld"
+    }
+  },
+  "minecraft:overworld_caves": {
+    "type": "minecraft:overworld_caves",
+    "generator": {
+      "type": "minecraft:noise",
+      "biome_source": {
+        "type": "minecraft:multi_noise",
+        "preset": "minecraft:overworld"
+      },
+      "settings": "minecraft:caves"
+    }
+  },
+  "minecraft:ended_overworld": {
+    "type": "minecraft:overworld",
+    "generator": {
+      "type": "minecraft:noise",
+      "biome_source": {
+        "type": "minecraft:the_end",
+        "preset": "minecraft:overworld"
+      },
+      "settings": "minecraft:floating_islands"
+    }
+  },
+  "minecraft:ended_nether": {
+    "type": "minecraft:the_nether",
+    "generator": {
+      "type": "minecraft:noise",
+      "biome_source": {
+        "type": "minecraft:the_end",
+        "preset": "minecraft:nether"
+      },
+      "settings": "minecraft:floating_islands"
+    }
   }
-  }
+}
+}
 }'''
-    out += footer
+  out += footer
 
-    # Return it!
-    return out
+  # Return it!
+  return out
 
 def sub_folder(parent, name):
-    path = os.path.join(parent, name)
-    os.makedirs(path, exist_ok=True)
-    return path
+  path = os.path.join(parent, name)
+  os.makedirs(path, exist_ok=True)
+  return path
 
 def create_folders(main_name):
   #script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -282,22 +282,21 @@ def add_noise_setting(noise_mode, main_name):
   destination_folder = os.path.join(main_name, "data", "minecraft",  "worldgen", "noise_settings")
   add_json_to_folder(file, destination_folder)
 
-
 def add_json_to_folder(file_path, destination_folder):
-    # Read the JSON file
-    with open(os.path.join("jsons",file_path), 'r') as file:
-        data = json.load(file)
-    
-    # Create the destination folder if it doesn't exist
-    if not os.path.exists(destination_folder):
-        os.makedirs(destination_folder)
-    
-    # Save the JSON file to the new location
-    base_name = os.path.basename(file_path)
-    destination_path = os.path.join(destination_folder, base_name)
-    with open(destination_path, 'w') as file:
-        json.dump(data, file, indent=4)
-
+  # Read the JSON file
+  with open(os.path.join("jsons",file_path), 'r') as file:
+    data = json.load(file)
+  
+  # Create the destination folder if it doesn't exist
+  if not os.path.exists(destination_folder):
+    os.makedirs(destination_folder)
+  
+  # Save the JSON file to the new location
+  base_name = os.path.basename(file_path)
+  destination_path = os.path.join(destination_folder, base_name)
+  with open(destination_path, 'w') as file:
+    json.dump(data, file, indent=4)
+  os.rename(os.path.join(destination_folder, base_name), os.path.join(destination_folder,"overworld.json"))
 
 #int, str, str
 def mcmeta(version, description, main_name):
