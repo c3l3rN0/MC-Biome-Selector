@@ -1,3 +1,65 @@
+spawn = """effect give @a resistance 10 255 true
+execute if block ~ -40 ~ air run tp @a ~ -40 ~
+execute if block ~ -40 ~ air run spawnpoint @a ~ -40 ~
+
+execute if block ~ -30 ~ air run tp @a ~ -30 ~
+execute if block ~ -30 ~ air run spawnpoint @a ~ -30 ~
+
+execute if block ~ -20 ~ air run tp @a ~ -20 ~
+execute if block ~ -20 ~ air run spawnpoint @a ~ -20 ~
+
+execute if block ~ -10 ~ air run tp @a ~ -10 ~
+execute if block ~ -10 ~ air run spawnpoint @a ~ -10 ~
+
+execute if block ~ 0 ~ air run tp @a ~ 0 ~
+execute if block ~ 0 ~ air run spawnpoint @a ~ 0 ~
+
+execute if block ~ 10 ~ air run tp @a ~ 10 ~
+execute if block ~ 10 ~ air run spawnpoint @a ~ 10 ~
+
+execute if block ~ 20 ~ air run tp @a ~ 20 ~
+execute if block ~ 20 ~ air run spawnpoint @a ~ 20 ~
+
+execute if block ~ 30 ~ air run tp @a ~ 30 ~
+execute if block ~ 30 ~ air run spawnpoint @a ~ 30 ~
+
+execute if block ~ 40 ~ air run tp @a ~ 40 ~
+execute if block ~ 40 ~ air run spawnpoint @a ~ 40 ~
+
+execute if block ~ 50 ~ air run tp @a ~ 50 ~
+execute if block ~ 50 ~ air run spawnpoint @a ~ 50 ~
+
+execute if block ~ 60 ~ air run tp @a ~ 60 ~
+execute if block ~ 60 ~ air run spawnpoint @a ~ 60 ~
+
+execute if block ~ 70 ~ air run tp @a ~ 70 ~
+execute if block ~ 70 ~ air run spawnpoint @a ~ 70 ~
+
+execute if block ~ 80 ~ air run tp @a ~ 80 ~
+execute if block ~ 80 ~ air run spawnpoint @a ~ 80 ~
+
+execute if block ~ 90 ~ air run tp @a ~ 90 ~
+execute if block ~ 90 ~ air run spawnpoint @a ~ 90 ~
+
+execute if block ~ 100 ~ air run tp @a ~ 100 ~
+execute if block ~ 100 ~ air run spawnpoint @a ~ 100 ~
+
+execute if block ~ 110 ~ air run tp @a ~ 110 ~
+execute if block ~ 110 ~ air run spawnpoint @a ~ 110 ~
+
+execute if block ~ 120 ~ air run tp @a ~ 120 ~
+execute if block ~ 120 ~ air run spawnpoint @a ~ 120 ~
+
+say Lush Caves Only Datapack loaded
+gamerule doDaylightCycle false
+time set midnight
+execute unless block ~ ~ ~ air run effect clear"""
+
+
+
+
+
+
 all_biomes = """
 {
   "biomes": [

@@ -9,7 +9,7 @@ import ctypes
 import os
 import json
 from assets.file import all_biomes as RAW
-
+from assets.file import spawn as spawn
 #main function
 def main():
   #confirm start
@@ -164,98 +164,28 @@ def assemble_w(lst):
   out += "\n]"
 
   # Add the closing brackets for the JSON structure
-  footer = '''}
-  },
-  "minecraft:the_end": {
-    "type": "minecraft:the_end",
-    "generator": {
-      "type": "minecraft:noise",
-      "settings": "minecraft:end",
-      "biome_source": {
-        "type": "minecraft:the_end"
+  footer = '''    }}},
+    "minecraft:the_end": {
+      "type": "minecraft:the_end",
+      "generator": {
+        "type": "minecraft:noise",
+        "biome_source": {
+          "type": "minecraft:the_end"
+        },
+        "settings": "minecraft:end"
       }
-    }
-  },
-  "minecraft:the_nether": {
-    "type": "minecraft:the_nether",
-    "generator": {
-      "type": "minecraft:noise",
-      "settings": "minecraft:nether",
-      "biome_source": {
-        "type": "minecraft:multi_noise",
-        "preset": "minecraft:nether"
-      }
-    }
-  },
-  "minecraft:normal_overworld": {
-    "type": "minecraft:overworld",
-    "generator": {
-      "type": "minecraft:noise",
-      "biome_source": {
-        "type": "minecraft:multi_noise",
-        "preset": "minecraft:overworld"
-      },
-      "settings": "minecraft:overworld"
-    }
-  },
-  "minecraft:duplicate_nether": {
-    "type": "minecraft:the_nether",
-    "generator": {
-      "type": "minecraft:noise",
-      "settings": "minecraft:nether",
-      "biome_source": {
-        "type": "minecraft:multi_noise",
-        "preset": "minecraft:nether"
-      }
-    }
-  },
-  "minecraft:ocean_overworld": {
-    "type": "minecraft:overworld",
-    "generator": {
-      "type": "minecraft:noise",
-      "biome_source": {
-        "type": "minecraft:fixed",
-        "biome": "minecraft:ocean"
-      },
-      "settings": "minecraft:overworld"
-    }
-  },
-  "minecraft:overworld_caves": {
-    "type": "minecraft:overworld_caves",
-    "generator": {
-      "type": "minecraft:noise",
-      "biome_source": {
-        "type": "minecraft:multi_noise",
-        "preset": "minecraft:overworld"
-      },
-      "settings": "minecraft:caves"
-    }
-  },
-  "minecraft:ended_overworld": {
-    "type": "minecraft:overworld",
-    "generator": {
-      "type": "minecraft:noise",
-      "biome_source": {
-        "type": "minecraft:the_end",
-        "preset": "minecraft:overworld"
-      },
-      "settings": "minecraft:floating_islands"
-    }
-  },
-  "minecraft:ended_nether": {
-    "type": "minecraft:the_nether",
-    "generator": {
-      "type": "minecraft:noise",
-      "biome_source": {
-        "type": "minecraft:the_end",
-        "preset": "minecraft:nether"
-      },
-      "settings": "minecraft:floating_islands"
-    }
-  }
-}
-}
-}'''
+    },
+    "minecraft:the_nether": {
+      "type": "minecraft:the_nether",
+      "generator": {
+        "type": "minecraft:noise",
+        "biome_source": {
+          "type": "minecraft:multi_noise",
+          "preset": "minecraft:nether"
+        },
+        "settings": "minecraft:nether"
+      }}}}
+'''
   out += footer
 
   # Return it!
@@ -281,6 +211,8 @@ def add_noise_setting(noise_mode, main_name):
   file = json_names[noise_mode]
   destination_folder = os.path.join(main_name, "data", "minecraft",  "worldgen", "noise_settings")
   add_json_to_folder(file, destination_folder)
+  if file == "caves.json":
+     add_better_spawn(os.path.join(main_name, "data"))
 
 def add_json_to_folder(file_path, destination_folder):
   # Read the JSON file
@@ -297,6 +229,18 @@ def add_json_to_folder(file_path, destination_folder):
   with open(destination_path, 'w') as file:
     json.dump(data, file, indent=4)
   os.rename(os.path.join(destination_folder, base_name), os.path.join(destination_folder,"overworld.json"))
+
+#prevents the player from spawning on top of the bedrock
+def add_better_spawn(path):
+  path_namespace = sub_folder(path, 'name')
+  path_advancement = sub_folder(path_namespace, 'advancements')
+  path_functions = sub_folder(path_namespace, "functions")
+  add_json_to_folder('start.json', path_advancement)
+
+  #save spawn.mcfunction
+  path = os.path.join(path_functions, "spawn.mcfunction")
+  with open(path, "w", encoding="utf-8") as file:
+    file.write(spawn)
 
 #int, str, str
 def mcmeta(version, description, main_name):
