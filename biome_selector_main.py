@@ -1,6 +1,7 @@
 #imports
 import subprocess
 import sys
+
 #pillow is not a standard libary, so we need to install it
 subprocess.check_call([sys.executable, "-m", "pip", "install", "pillow"])
 import tkinter as tk
@@ -10,26 +11,31 @@ import os
 import json
 from assets.file import all_biomes as RAW
 from assets.file import spawn as spawn
+
 #main function
 def main():
   #confirm start
-  label = tk.Label(root, text="running...")
-  label.place(x = 630, y= 10)
+  label = tk.Label(root, text="Bug")
+  label.place(x = 670, y= 10)
 
   #get inputs
   mode = white.get()
+  sea_level = int(sea_lvl.get())
   version = version_to_pack_format(version_e.get())
   description = description_e.get()
   title = title_e.get()
   version_f = int(version) #version_f is in mcmeta format
   noise_mode = int(noise_set.get())
+
   #get biomes
   selected_biomes = []
   if mode == str(1):
+    #Whitelist
     for i in range(len(ram)):
       if ram[i].get() == str(1):
         selected_biomes.append(data[i])
   else:
+    #Blacklist
       for i in range(len(ram)):
         if ram[i].get() == str(0):
           selected_biomes.append(data[i])
@@ -38,10 +44,10 @@ def main():
   mcmeta(version_f, description, title)
   main_w(selected_biomes, title)
   add_noise_setting(noise_mode, title)
-
+  set_sea_lvl(title, sea_level)
   #confirm end
-  label = tk.Label(root, text="finished!")
-  label.place(x = 630, y= 10)
+  label = tk.Label(root, text="Finished")
+  label.place(x=630, y=10, height=20, width=100)
 
 # Get the desired biomes list
 def main_w(allow, main_name):
@@ -54,11 +60,6 @@ def main_w(allow, main_name):
 
   # Assemble the filtered biomes back into a .json object
   out = assemble_w(clean_biomes)
-
-  # Save to a file
-  #script_dir = os.path.dirname(os.path.abspath(__file__))
-  #main_path = os.path.join(script_dir, main_name)
-
   output_path = os.path.join(main_name +"/data/minecraft/worldgen/world_preset", "normal.json")
   with open(output_path, "w") as f:
       f.write(out)
@@ -257,6 +258,25 @@ def mcmeta(version, description, main_name):
   with open(path, "w", encoding="utf-8") as file:
       file.write(mcmeta_json)
 
+#str,int
+def set_sea_lvl(main_name,level):
+  path = os.path.join(main_name, "data", "minecraft", "worldgen", "noise_settings", "overworld.json")
+  with open(path) as file:
+    data = json.load(file)
+
+  #change "sea_level" data 
+  if isinstance(data, dict):
+      data["sea_level"] = level
+  elif isinstance(data, list):
+      for ram in data:
+          if "sea_level" in ram:
+              ram["sea_level"] = level
+
+
+  # Save the updated JSON with formatted output
+  with open(path, 'w') as f:
+      json.dump(data, f, indent=4)
+
 #str
 def version_to_pack_format(user_version):
   versions = [
@@ -282,7 +302,6 @@ def version_to_pack_format(user_version):
   for i in range(len(versions)):
     if versions[i][0] == user_version:
       return(int(versions[i][1]))
-
 
 
 #gui inits
@@ -413,5 +432,15 @@ label.place(x = 450, y = 10, width =75)
 title_e = tk.Entry(root)
 title_e.place(x = 510, y = 10, width = 100) 
 title_e.insert(0,"My Datapack")
+
+#sea_level slider
+value_label = tk.Label(root, text="Sea Level")
+value_label.place(x = 675, y = 195, width = 100) 
+
+sea_lvl = tk.IntVar()
+sea_lvl.set(63)
+
+slider = tk.Scale(root, from_=-64, to=256, orient=tk.VERTICAL, variable=sea_lvl)
+slider.place(x=695, y=215, width=100, height=180)
 
 root.mainloop()
